@@ -1,0 +1,28 @@
+# Fastapi & server
+
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+python-multipart==0.0.6
+pydantic==2.5.3
+
+# Database
+psycopg2-binary==2.9.9           
+sqlalchemy==2.0.25               
+
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-dotenv==1.0.0
+
+PyPDF2==3.0.1
+
+langchain-text-splitters==0.0.1
+
+sentence-transformers==2.3.1     # all-mpnet-base-v2 model
+torch==2.1.2  
+
+transformers==4.36.2             # HuggingFace models
+accelerate==0.25.0               # Optimize model loading
+pinecone-client==3.0.2
+
+requests==2.31.0                 # HTTP requests
+numpy==1.26.3                    # Array operations
