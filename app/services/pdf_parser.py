@@ -1,70 +1,112 @@
 from PyPDF2 import PdfReader
-from typing import Optional
-import os
+from typing import Optional, Tuple
+from config import settings
 from pathlib import Path
+from logging import getLogger
+import os
+logger = getLogger(__name__)
 
 
-
+# Exception class
 class PdfParsingError(Exception):
     pass
 
 
+# PDF parser and validator class
 class PDFParser:
 
-    """Extract text from PDF file."""
+    """
+    > Extract text from PDF file.
+    > Validate the incoming file.
+    """
 
     @staticmethod
     def extract_text(pdf_path: str) -> str:
-        """ Extract all text from PDF file.
-
-        Args:
-            path to pdf file 
-        
-        Returns:
-             extracted text from pdf file
         """
-        
-        if not os.path.exists(pdf_path):
-            raise PdfParsingError(f"file {pdf_path} does not exist")
-
-        file = PdfReader(pdf_path)
-        pages = file.pages
-        print(len(pages))
-        data = ""
-
+        Extract all text from a PDF file.
+        """
         try:
-            for page in pages:
-                data += page.extract_text()
-        except PdfParsingError as e:
-            print(f"PdfParsingError :- {e} ")
-            raise e("Corrupted file") 
+            reader = PdfReader(pdf_path)
+            pages = reader.pages
+            logger.info(f"Number of pages: {len(pages)}")
+
+            text = ""
+            for index, page in enumerate(pages, start=1):
+
+                if "/XObject" in page["/Resources"]:
+                    raise PdfParsingError(f"PDF {pdf_path} contains images and cannot be parsed.")
+                
+                page_text = page.extract_text()
+
+                if page_text: 
+                    text += page_text
+
+            if not text.strip():
+                raise PdfParsingError(f"PDF contains no extractable text (may be image-only)")
+            return text
+
+        except Exception as e:
+            raise PdfParsingError(f"Failed to extract text from {pdf_path}: {e}")
+
         finally:
-            print("\nCompleted processing of file")
+            print(f"Completed processing of file: {pdf_path}")
 
 
     @staticmethod
-    def validate_file(pdf_file:str, max_size:int) -> list[bool, Optional[str]]:
-        """ Validate the PDF file.
-
-        Args:
-            pdf_file: path to pdf file
-            max_size: maximum size of pdf file
-        
-        Returns:
-            list of boolean and optional string
+    def validate_file(pdf_file: str, max_size: int) -> None:
         """
-        
-        if not os.path.exists(pdf_path):
-            raise PdfParsingError(f"file {pdf_path} does not exist")
+        Validate a PDF file.
 
+        Checks:
+        - File exists
+        - File is a PDF
+        - File is readable
+        - File size is > 0 and within max_size limit
+        """
         file_path = Path(pdf_file)
-        file_name = file_name
+
+        
+        if not file_path.exists():
+            raise PdfParsingError(f"File {file_path} does not exist.")
+
+        
+        if file_path.suffix.lower() != ".pdf":
+            raise PdfParsingError(f"Provided file {file_path.name} is not a PDF.")
+
+        
+        file_size_mb = file_path.stat().st_size / (1024 * 1024)
+        if file_size_mb == 0:
+            raise PdfParsingError(f"PDF {file_path.name} is empty or corrupted.")
+        if file_size_mb > max_size:
+            raise PdfParsingError(f"PDF size {file_size_mb:.2f}MB exceeds {max_size}MB limit.")
+
+        
+        
+        PdfReader(file_path)
+        raise PdfParsingError(f"PDF {file_path.name} cannot be read or is corrupted.")
 
 
-# where does that path of pdf came from ? like will we store pdf file in here within project, like the point where how os.path will figure out if file exist or not
 
-# pdfreader > object of file
-# we got list of pagess through pages property of object 
-# then we looped over it to get the data
 
-# while reading the file how we would capture if file was corrupted or not ?
+
+# So far what we did ? 
+
+# We followed single responsibility principle. 
+# We created a file that will help us in parsing pdfs. 
+# File contain two functions. 
+# First function responsibility 
+# > open a file
+# > grab the text out of it
+# > returns a string
+
+
+# Second function responsibility 
+# > validate file existance. 
+# > make sure it is a pdf
+# > make sure it is neither zero mb in size nor it is greater than defined limit 
+# > make sure it is openable 
+ 
+# Takeaways 
+# > SRP
+# > Flow planning 
+# > use of try and exceptions
