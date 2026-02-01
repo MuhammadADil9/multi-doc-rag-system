@@ -39,9 +39,7 @@ class PDFParser:
                     )
 
                 page_text = page.extract_text()
-
-                if page_text:
-                    text += page_text
+                text += page_text
 
             if not text.strip():
                 raise PdfParsingError(
@@ -75,15 +73,17 @@ class PDFParser:
             raise PdfParsingError(f"Provided file {file_path.name} is not a PDF.")
 
         file_size_mb = file_path.stat().st_size / (1024 * 1024)
-        if file_size_mb == 0:
+        if file_path.stat().st_size == 0:
             raise PdfParsingError(f"PDF {file_path.name} is empty or corrupted.")
         if file_size_mb > max_size:
             raise PdfParsingError(
                 f"PDF size {file_size_mb:.2f}MB exceeds {max_size}MB limit."
             )
 
-        PdfReader(file_path)
-        raise PdfParsingError(f"PDF {file_path.name} cannot be read or is corrupted.")
+        if not PdfReader(file_path):
+            raise PdfParsingError(
+                f"PDF {file_path.name} cannot be read or is corrupted."
+            )
 
 
 # So far what we did ?

@@ -36,7 +36,4 @@ class TextSplitterService:
         return :- list of chunks
         """
 
-        if not text.strip():
-            raise TextSplitterError("Text is empty or whitespace.")
-
         return self.text_splitter.split_text(text)
