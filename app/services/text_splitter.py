@@ -1,9 +1,9 @@
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from config import settings
+from app.config import settings
 from typing import List
 
 
-class SplititerServiceError(Exception):
+class TextSplitterError(Exception):
     pass
 
 
@@ -18,9 +18,25 @@ class TextSplitterService:
         chunk_overlap: int = settings.CHUNK_OVERLAP,
     ):
         """Initialize RecursiveCharacterTextSplitter with parameter"""
-        text_splitter = RecursiveCharacterTextSplitter(
+        self.text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=chunk_size,
             chunk_overlap=chunk_overlap,
             length_function=len,
             is_separator_regex=False,
         )
+
+    def split_text(self, text: str) -> List[str]:
+        """
+        Break down strign into chunks
+
+        args :- Raw text that for conversion.
+
+        checks :- Text is empty or not
+
+        return :- list of chunks
+        """
+
+        if not text.strip():
+            raise TextSplitterError("Text is empty or whitespace.")
+
+        return self.text_splitter.split_text(text)
