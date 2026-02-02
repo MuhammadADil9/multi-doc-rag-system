@@ -12,7 +12,6 @@ def create_index():
     METRIC = "cosine"
 
     print("Creating pinecone index")
-    print("=" * 50)
 
     pc = Pinecone(
         api_key="pcsk_2NiKkS_TmjUzppAk6wDdD394WGhiks6dKzL8Wv35TDrGwyuLs7KuAKRnpsSK4oqLSV6zeF"
@@ -26,6 +25,8 @@ def create_index():
             metric=METRIC,
             spec=ServerlessSpec(cloud="aws", region="us-east-1"),
         )
+
+    print("\nIndex created successfully")
 
 
 if __name__ == "__main__":
