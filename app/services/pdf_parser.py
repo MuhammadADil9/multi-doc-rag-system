@@ -1,19 +1,15 @@
-from PyPDF2 import PdfReader
-from typing import Optional, Tuple
 from app.config import settings
+from PyPDF2 import PdfReader
 from pathlib import Path
 from logging import getLogger
-import os
 
 logger = getLogger(__name__)
 
 
-# Exception class
 class PdfParsingError(Exception):
     pass
 
 
-# PDF parser and validator class
 class PDFParser:
     """
     > Extract text from PDF file.
@@ -22,9 +18,7 @@ class PDFParser:
 
     @staticmethod
     def extract_text(pdf_path: str) -> str:
-        """
-        Extract all text from a PDF file.
-        """
+        """Extract all text from a PDF file"""
         try:
             reader = PdfReader(pdf_path)
             pages = reader.pages
@@ -86,10 +80,10 @@ class PDFParser:
             )
 
 
-# So far what we did ?
+# So far what I did ?
 
-# We followed single responsibility principle.
-# We created a file that will help us in parsing pdfs.
+# Followed single responsibility principle.
+# Created a file that will help us in parsing pdfs.
 # File contain two functions.
 # First function responsibility
 # > open a file

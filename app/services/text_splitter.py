@@ -26,14 +26,6 @@ class TextSplitterService:
         )
 
     def split_text(self, text: str) -> List[str]:
-        """
-        Break down strign into chunks
-
-        args :- Raw text that for conversion.
-
-        checks :- Text is empty or not
-
-        return :- list of chunks
-        """
+        """Break down strign into chunks"""
 
         return self.text_splitter.split_text(text)

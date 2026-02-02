@@ -6,50 +6,44 @@ from app.config import settings
 def test_pdf_pipeline():
     """Test PDF → Text → Chunks pipeline"""
 
-    # Step 1: Validate & Parse PDF
     pdf_path = "app/battle_of_hattin.pdf"
 
-    print("=" * 50)
     print("STEP 1: Validating PDF")
     print("=" * 50)
 
     try:
         PDFParser.validate_file(pdf_path, settings.MAX_FILE_SIZE_MB)
-        print("✓ Validation passed")
+        print("Validation passed")
     except Exception as e:
-        print(f"✗ Validation failed: {e}")
+        print(f" Validation failed: {e}")
         return
 
-    print("\n" + "=" * 50)
-    print("STEP 2: Extracting Text")
+    print("\nSTEP 2: Extracting Text")
     print("=" * 50)
 
     try:
         text = PDFParser.extract_text(pdf_path)
-        print(f"✓ Extracted {len(text)} characters")
-        print(f"Preview: {text[:200]}...")
+        print(f"Extracted {len(text)} characters out of file")
     except Exception as e:
-        print(f"✗ Extraction failed: {e}")
+        print(f" Extraction failed: {e}")
         return
 
-    print("\n" + "=" * 50)
-    print("STEP 3: Splitting into Chunks")
+    print("\nSTEP 3: Splitting into Chunks")
     print("=" * 50)
 
     try:
         splitter = TextSplitterService()
         chunks = splitter.split_text(text)
-        print(f"✓ Created {len(chunks)} chunks")
-        print(f"\nFirst chunk ({len(chunks[0])} chars):")
+        print(f"Created {len(chunks)} chunks")
+        print(f"\nFirst chunk ({len(chunks[0])} characters):")
         print(chunks[0])
-        print(f"\nLast chunk ({len(chunks[-1])} chars):")
+        print(f"\nLast chunk ({len(chunks[-1])} characters):")
         print(chunks[-1])
     except Exception as e:
-        print(f"✗ Splitting failed: {e}")
+        print(f"Splitting failed: {e}")
         return
 
-    print("\n" + "=" * 50)
-    print("✓ DAY 1 PIPELINE COMPLETE")
+    print("\nDAY 1 PIPELINE COMPLETE")
     print("=" * 50)
 
 
