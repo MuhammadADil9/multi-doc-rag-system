@@ -11,8 +11,10 @@ class Settings(BaseSettings):
 
     DATABASE_URL: Optional[str] = None
 
-    PINECONE_API_KEY: Optional[str] = None
-    PINCONE_ENV: Optional[str] = None
+    PINECONE_API_KEY: Optional[str] = (
+        "pcsk_2NiKkS_TmjUzppAk6wDdD394WGhiks6dKzL8Wv35TDrGwyuLs7KuAKRnpsSK4oqLSV6zeF"
+    )
+    PINCONE_ENV: Optional[str] = "us-east-1"
 
     class Config:
         env_file = ".env"

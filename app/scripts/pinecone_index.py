@@ -13,9 +13,7 @@ def create_index():
 
     print("Creating pinecone index")
 
-    pc = Pinecone(
-        api_key="pcsk_2NiKkS_TmjUzppAk6wDdD394WGhiks6dKzL8Wv35TDrGwyuLs7KuAKRnpsSK4oqLSV6zeF"
-    )
+    pc = Pinecone(api_key=settings.PINECONE_API_KEY)
 
     if not pc.has_index(index_name):
         pc.create_index(
@@ -23,7 +21,7 @@ def create_index():
             vector_type="dense",
             dimension=DIMENSION,
             metric=METRIC,
-            spec=ServerlessSpec(cloud="aws", region="us-east-1"),
+            spec=ServerlessSpec(cloud="aws", region=settings.PINECONE_ENV),
         )
 
     print("\nIndex created successfully")
