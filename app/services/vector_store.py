@@ -8,7 +8,7 @@ class PineconeError(Exception):
 
 
 class VectorStore:
-    """Database Operation Management"""
+    """Vector Database Operation Management"""
 
     def __init__(self, index_name: str = "multi-doc-rag"):
         """Initialize pinecone connection"""
