@@ -19,4 +19,8 @@ def get_db():
 
 
 def init_db():
+    from app.models import Document, Chat, Chunk
+
     Base.metadata.create_all(bind=engine)
+
+    print("Database initialized successfully.")
