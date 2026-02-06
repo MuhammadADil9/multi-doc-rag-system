@@ -10,7 +10,6 @@ def create_index():
     index_name = "multi-doc-rag"
     DIMENSION = 768
     METRIC = "cosine"
-
     print("Creating pinecone index")
 
     pc = Pinecone(api_key=settings.PINECONE_API_KEY)

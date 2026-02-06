@@ -17,13 +17,18 @@ class VectorStore:
         print("Pinecone connection established\n")
 
     def upsert(self, vectors: List[List[float]], ids: List[str], metadata: List[dict]):
-        """Validate input lengths and upsert vectors into Pinecone"""
-        if not (len(vectors) == len(ids) == len(metadata)):
-            raise PineconeError("Vectors, ids, and metadata must have the same length")
+        try:
+            """Validate input lengths and upsert vectors into Pinecone"""
+            if not (len(vectors) == len(ids) == len(metadata)):
+                raise PineconeError(
+                    "Vectors, ids, and metadata must have the same length"
+                )
 
-        data = list(zip(ids, vectors, metadata))
-        self.index.upsert(data)
-        print(f"{len(vectors)} vectors upserted successfully")
+            data = list(zip(ids, vectors, metadata))
+            self.index.upsert(data)
+            print(f"{len(vectors)} vectors upserted successfully")
+        except PineconeError:
+            raise PineconeError(f"Error upserting vectors")
 
     def query(self, vector: List[float], top_k: int = 5, metadata_filter: dict = None):
         """Query for similar vectors"""
