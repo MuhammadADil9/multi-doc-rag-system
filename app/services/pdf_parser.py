@@ -80,24 +80,4 @@ class PDFParser:
             )
 
 
-# So far what I did ?
-
-# Followed single responsibility principle.
-# Created a file that will help us in parsing pdfs.
-# File contain two functions.
-# First function responsibility
-# > open a file
-# > grab the text out of it
-# > returns a string
-
-
-# Second function responsibility
-# > validate file existance.
-# > make sure it is a pdf
-# > make sure it is neither zero mb in size nor it is greater than defined limit
-# > make sure it is openable
-
-# Takeaways
-# > SRP
-# > Flow planning
-# > use of try and exceptions
+# correct the pdf size checking algorithm

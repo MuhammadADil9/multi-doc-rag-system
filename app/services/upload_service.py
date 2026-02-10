@@ -36,31 +36,24 @@ class UploadService:
         """
 
         try:
-            print(f"\n{'='*60}")
             print(f"UPLOAD PIPELINE: {filename}")
-            print(f"{'='*60}")
 
             file_size_mb = Path(filepath).stat().st_size / (1024 * 1024)
 
-            # STEP 1: Validate PDF
             print("\n[1/7] Validating PDF...")
             PDFParser.validate_file(
                 pdf_file=filepath, max_size=settings.MAX_FILE_SIZE_MB
             )
 
-            # STEP 2: Extract Text
             print("\n[2/7] Extracting text...")
             text = PDFParser.extract_text(pdf_path=filepath)
 
-            # STEP 3: Split into Chunks
             print("\n[3/7] Splitting text...")
             chunks = self.text_splitter.split_text(text)
 
-            # STEP 4: Generate Embeddings
             print("\n[4/7] Generating embeddings...")
             embeddings = self.embeddings.batch_embeddings(texts=chunks)
 
-            # STEP 5: Create Document Record
             print("\n[5/7] Creating document record...")
 
             document_id = uuid.uuid4()
@@ -77,7 +70,6 @@ class UploadService:
             db.add(document)
             db.flush()
 
-            # STEP 6: Create Chunk Records
             print("\n[6/7] Creating chunk records...")
 
             chunk_records = []
@@ -99,7 +91,6 @@ class UploadService:
             db.add_all(chunk_records)
             db.flush()
 
-            # STEP 7: Upload to Pinecone
             print("\n[7/7] Uploading to Pinecone...")
 
             metadatas = [
@@ -117,13 +108,7 @@ class UploadService:
                 metadata=metadatas,
             )
 
-            # COMMIT TRANSACTION
-            print("\n[COMMIT] All operations successful, committing...")
             db.commit()
-
-            print(f"\n{'='*60}")
-            print("✓ UPLOAD COMPLETE")
-            print(f"{'='*60}\n")
 
             return {
                 "document_id": str(document_id),
