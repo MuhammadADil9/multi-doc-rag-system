@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     CHUNK_OVERLAP: int = 65
 
     DATABASE_URL: Optional[str] = (
-        "postgresql://neondb_owner:npg_EZRsxgM69CeP@ep-shy-band-ahn8iqnb-pooler.c-3.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+        "postgresql://neondb_owner:npg_35FEgNvjiHpa@ep-polished-brook-aif4jxvd.c-4.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
     )
 
     PINECONE_API_KEY: Optional[str] = (
