@@ -36,7 +36,7 @@ async def upload_document(
             shutil.copyfileobj(file.file, buffer)
 
         file_size_mb = temp_file_path.stat().st_size / (1024 * 1024)
-        if file_size_mb > settings.MAX_FILE_SIZE:
+        if file_size_mb > settings.MAX_FILE_SIZE_MB:
             raise HTTPException(
                 status_code=400,
                 detail=f"File size exceeds {settings.MAX_FILE_SIZE} limit.",
