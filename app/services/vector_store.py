@@ -1,6 +1,7 @@
 from pinecone.grpc import PineconeGRPC as Pinecone
 from app.config import settings
 from typing import List
+from pinecone import Vector
 
 
 class PineconeError(Exception):
@@ -23,14 +24,21 @@ class VectorStore:
                 raise PineconeError(
                     "Vectors, ids, and metadata must have the same length"
                 )
-
-            data = list(zip(ids, vectors, metadata))
+            # Issue is that passed argument isn't the one which is expected as by the parameter.
+            # Passing down values by wrapping it up in a special Vector data structure.
+            data = [
+                Vector(id=id_, values=vector, metadata=meta)
+                for id_, vector, meta in zip(ids, vectors, metadata)
+                ]
             self.index.upsert(data)
+
+            # data = list(zip(ids, vectors, metadata))
+            # self.index.upsert(data)
             print(f"{len(vectors)} vectors upserted successfully")
         except PineconeError:
             raise PineconeError(f"Error upserting vectors")
 
-    def query(self, vector: List[float], top_k: int = 5, metadata_filter: dict = None):
+    def query(self, vector: List[float], top_k: int = 5, metadata_filter = None):
         """Query for similar vectors"""
         try:
             return self.index.query(

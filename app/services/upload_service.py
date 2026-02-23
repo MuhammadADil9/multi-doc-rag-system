@@ -29,7 +29,7 @@ class UploadService:
         filepath: str,
         filename: str,
         db: Session,
-        user_id: str = None,
+        user_id = None,
     ) -> Dict[str, Any]:
         """
         Complete upload pipeline with transaction management.

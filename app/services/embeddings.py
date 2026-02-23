@@ -4,7 +4,7 @@ from typing import List
 
 class EmbeddingsError(Exception):
     """Embeddings error"""
-
+    pass
 
 class EmbeddingsService:
     """Load model and generate embeddings"""

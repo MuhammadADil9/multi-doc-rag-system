@@ -1,9 +1,7 @@
 from app.config import settings
 from PyPDF2 import PdfReader
 from pathlib import Path
-from logging import getLogger
 
-logger = getLogger(__name__)
 
 
 class PdfParsingError(Exception):
@@ -22,12 +20,12 @@ class PDFParser:
         try:
             reader = PdfReader(pdf_path)
             pages = reader.pages
-            logger.info(f"Number of pages: {len(pages)}")
 
             text = ""
             for index, page in enumerate(pages, start=1):
-
-                if "/XObject" in page["/Resources"]:
+                
+                resources = page.get("/Resources")
+                if resources and "/XObject" in resources:
                     raise PdfParsingError(
                         f"PDF {pdf_path} contains images and cannot be parsed."
                     )
@@ -37,7 +35,7 @@ class PDFParser:
 
             if not text.strip():
                 raise PdfParsingError(
-                    f"PDF contains no extractable text (may be image-only)"
+                    f"PDF contains no extractable text "
                 )
             return text
 
@@ -66,6 +64,7 @@ class PDFParser:
         if file_path.suffix.lower() != ".pdf":
             raise PdfParsingError(f"Provided file {file_path.name} is not a PDF.")
 
+        # Measure file size in bytes 
         file_size_mb = file_path.stat().st_size / (1024 * 1024)
         if file_path.stat().st_size == 0:
             raise PdfParsingError(f"PDF {file_path.name} is empty or corrupted.")

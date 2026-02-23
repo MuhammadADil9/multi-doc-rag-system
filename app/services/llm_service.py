@@ -16,11 +16,10 @@ class LLMService:
 
     def __init__(self, model_name: str = "BTLM-3B-8k-base"):
         print(f"Loading Tokenizer")
-        self.tokenizer = AutoTokenizer.from_pretrained("cerebras/btlm-3b-8k-base")
+        self.tokenizer = AutoTokenizer.
         self.model = AutoModelForCausalLM.from_pretrained(
             "cerebras/btlm-3b-8k-base", trust_remote_code=True, torch_dtype="auto"
         )
-
         self.model.eval()
 
     def generate_answer(
@@ -39,20 +38,20 @@ class LLMService:
 
             context_text = "\n\n".join(context_chunks)
             formatted_prompt = f"Answer the question based on the context.\n\nContext:\n{context_text}\n\nQuestion: {prompt}\n\nAnswer:"
-        
-        
-            inputs = self.tokenizer(prompt, return_tensors="pt", max_length=512, truncation=True)
-        
-        
+
+            inputs = self.tokenizer(
+                prompt, return_tensors="pt", max_length=512, truncation=True
+            )
+
             with torch.no_grad():
                 outputs = self.model.generate(
-                    **inputs,
-                    max_length=max_length,
-                    num_beams=4,
-                    early_stopping=True
+                    **inputs, max_length=max_length, num_beams=4, early_stopping=True
                 )
-        
-        
-            answer = self.tokenizer.decode(outputs[0], skip_special_tokens=True)        
-        
-        
+
+            answer = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+
+        except Exception as e:
+            raise LLMServiceError(f"Failed to generate answer: {str(e)}") from e
+
+        finally:
+            return answer
