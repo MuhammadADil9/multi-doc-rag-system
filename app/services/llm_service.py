@@ -1,6 +1,6 @@
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
-from typing import List, Dict, Any
+from typing import List
 
 
 class LLMServiceError(Exception):
@@ -14,11 +14,11 @@ class LLMService:
 
     """
 
-    def __init__(self, model_name: str = "BTLM-3B-8k-base"):
+    def __init__(self, model_name: str = "cerebras/btlm-3b-8k-base"):
         print(f"Loading Tokenizer")
-        self.tokenizer = AutoTokenizer.
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         self.model = AutoModelForCausalLM.from_pretrained(
-            "cerebras/btlm-3b-8k-base", trust_remote_code=True, torch_dtype="auto"
+            model_name, trust_remote_code=True, torch_dtype="auto"
         )
         self.model.eval()
 
@@ -40,7 +40,7 @@ class LLMService:
             formatted_prompt = f"Answer the question based on the context.\n\nContext:\n{context_text}\n\nQuestion: {prompt}\n\nAnswer:"
 
             inputs = self.tokenizer(
-                prompt, return_tensors="pt", max_length=512, truncation=True
+                formatted_prompt, return_tensors="pt", max_length=512, truncation=True
             )
 
             with torch.no_grad():

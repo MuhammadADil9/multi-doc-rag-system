@@ -20,7 +20,7 @@ def create_index():
             vector_type="dense",
             dimension=DIMENSION,
             metric=METRIC,
-            spec=ServerlessSpec(cloud="aws", region=settings.PINECONE_ENV),
+            spec=ServerlessSpec(cloud="aws", region=settings.PINCONE_ENV),
         )
 
     print("\nIndex created successfully")

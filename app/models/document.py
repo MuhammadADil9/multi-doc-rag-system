@@ -6,6 +6,7 @@ import uuid
 from datetime import datetime
 
 
+
 class Document(Base):
     __tablename__ = "documents"
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)

@@ -2,9 +2,9 @@ from app.services.pdf_parser import PDFParser
 from app.services.text_splitter import TextSplitterService
 from app.services.embeddings import EmbeddingsService
 from app.services.vector_store import VectorStore
+from app.config import settings
 from app.models import Document, Chunk
 from datetime import datetime
-from app.config import settings
 from sqlalchemy.orm import Session
 import uuid
 from typing import Dict, Any
@@ -13,7 +13,6 @@ from pathlib import Path
 
 class UploadServiceError(Exception):
     """Upload service error"""
-
     pass
 
 
@@ -74,7 +73,7 @@ class UploadService:
 
             chunk_records = []
             chunk_ids = []
-            for idx, chunk_text in enumerate(chunks):
+            for idx, chunk_text in enumerate(chunks,start=1):
                 chunk_id = uuid.uuid4()
                 chunk_ids.append(str(chunk_id))
 
@@ -84,7 +83,7 @@ class UploadService:
                         document_id=document_id,
                         chunk_index=idx,
                         chunk_text=chunk_text,
-                        created_at=datetime.utcnow(),
+                        created_at=datetime.now(),
                     )
                 )
 
@@ -99,7 +98,7 @@ class UploadService:
                     "document_id": str(document_id),
                     "chunk_index": idx,
                 }
-                for idx, chunk_id in enumerate(chunk_ids)
+                for idx, chunk_id in enumerate(chunk_ids,start=1)
             ]
 
             self.vector_store.upsert(

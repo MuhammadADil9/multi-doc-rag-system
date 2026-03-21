@@ -32,8 +32,6 @@ class VectorStore:
                 ]
             self.index.upsert(data)
 
-            # data = list(zip(ids, vectors, metadata))
-            # self.index.upsert(data)
             print(f"{len(vectors)} vectors upserted successfully")
         except PineconeError:
             raise PineconeError(f"Error upserting vectors")

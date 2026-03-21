@@ -9,14 +9,14 @@ class Settings(BaseSettings):
     CHUNK_SIZE: int = 512
     CHUNK_OVERLAP: int = 65
 
-    DATABASE_URL: Optional[str] = (
+    DATABASE_URL: str = (
         "postgresql://neondb_owner:npg_35FEgNvjiHpa@ep-polished-brook-aif4jxvd.c-4.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
     )
 
     PINECONE_API_KEY: Optional[str] = (
         "pcsk_2NiKkS_TmjUzppAk6wDdD394WGhiks6dKzL8Wv35TDrGwyuLs7KuAKRnpsSK4oqLSV6zeF"
     )
-    PINCONE_ENV: Optional[str] = "us-east-1"
+    PINCONE_ENV: str = "us-east-1"
 
     class Config:
         env_file = ".env"

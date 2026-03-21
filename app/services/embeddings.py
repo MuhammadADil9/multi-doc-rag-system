@@ -6,11 +6,11 @@ class EmbeddingsError(Exception):
     """Embeddings error"""
     pass
 
+
 class EmbeddingsService:
     """Load model and generate embeddings"""
 
     def __init__(self, model_name: str = "all-mpnet-base-v2"):
-        """load model"""
         self.model = SentenceTransformer(model_name)
         print(f"Model :- {model_name} loaded")
 

@@ -10,8 +10,8 @@ class PdfParsingError(Exception):
 
 class PDFParser:
     """
-    > Extract text from PDF file.
     > Validate the incoming file.
+    > Extract text from PDF file.
     """
 
     @staticmethod
