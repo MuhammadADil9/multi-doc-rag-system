@@ -83,4 +83,25 @@ class QueryService:
             
             print("\n[3/5] Fetching chunk details from database...")
             
+            chunk_ids = [match['metadata']['chunk_id'] for match in results['matches']]
             
+            chunks = db.query(Chunk).filter(Chunk.id.in_(chunk_ids)).all()
+            
+            chunk_map = {str(chunk.id): chunk for chunk in chunks}
+            
+            
+            context_texts = []
+            sources = []
+            for match in results['matches']: # type: ignore
+                chunk_id = match['metadata']['chunk_id']
+                chunk = chunk_map.get(chunk_id)
+                if chunk:
+                    context_texts.append(chunk.chunk_text)
+                    sources.append({
+                        "chunk_id": chunk_id,
+                        "chunk_text": chunk.chunk_text,
+                        "chunk_index": chunk.chunk_index,
+                        "document_id": str(chunk.document_id),
+                        "score": match['score']
+                    })
+            print(f"✓ Retrieved chunk details for {len(context_texts)} chunks")
