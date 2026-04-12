@@ -1,0 +1,86 @@
+from numpy import single
+
+from app.services.embeddings import EmbeddingsService
+from app.services.vector_store import VectorStore
+from app.services.llm_service import LLMService
+from app.models import Chunk, Chat
+from sqlalchemy.orm import Session
+from typing import List, Dict, Any
+import uuid
+from datetime import datetime
+
+
+class QueryServiceError(Exception):
+    """Query service error"""
+
+class QueryService:
+    """Orchestrates the complete query pipeline"""
+    
+    def __init__(self):
+        """Initialize all required services"""
+        # TODO: Initialize services
+        self.embedding_service = EmbeddingsService()
+        self.vector_store = VectorStore()
+        self.llm_service = LLMService()
+
+    def process_query(
+        self,
+        question: str,
+        document_ids: List[str],
+        db: Session,
+        top_k: int = 3,
+        user_id: str = None  # For Day 6
+        ) -> Dict[str, Any]:
+        
+     """
+        Complete query pipeline: question -> embedding -> pinecone search -> LLM -> answer.
+        
+        Args:
+            question: User's question
+            document_ids: List of document UUIDs to search within
+            db: Database session
+            top_k: Number of chunks to retrieve
+            user_id: User ID (optional for now)
+            
+        Returns:
+            {
+                "answer": "Generated answer text",
+                "sources": [
+                    {
+                        "chunk_id": "uuid",
+                        "chunk_text": "...",
+                        "chunk_index": 0,
+                        "document_id": "uuid",
+                        "score": 0.95
+                    },
+                    ...
+                ],
+                "chat_id": "uuid"
+            }
+        """
+        
+        try:
+            print(f"\n{'='*60}")
+            print(f"QUERY PIPELINE: {question[:50]}...")
+            print(f"{'='*60}")
+        
+            print("\n[1/5] Embedding question...")
+            question_embedding = self.embedding_service.generate_embeddings(question)
+            print("Question embedding generated.")
+            
+            print("\n[2/5] Searching vector store...")
+            # Build metadata filter for document_ids
+            if len(document_ids) == 1:
+                # Single document filter
+                metadata_filter = {"document_id": document_ids[0]}
+            else:
+                # Multiple document filter
+                metadata_filter = {"document_id": {"$in": document_ids}}
+
+            results = self.vector_store.query(vector=question_embedding, top_k=top_k, metadata_filter=metadata_filter)
+            print(f"✓ Found {len(results['matches'])} matching chunks")
+            
+            
+            print("\n[3/5] Fetching chunk details from database...")
+            
+            
