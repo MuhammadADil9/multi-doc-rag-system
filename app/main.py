@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.routes import documents
+from app.routes import documents, query
 from app.database.connection import init_db
 
 
@@ -13,7 +13,7 @@ def startup_event():
 
 
 app.include_router(documents.router)
-
+app.include_router(query.router)
 
 @app.get("/")
 def root():

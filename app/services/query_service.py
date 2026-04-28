@@ -1,17 +1,17 @@
-from numpy import single
-
 from app.services.embeddings import EmbeddingsService
 from app.services.vector_store import VectorStore
 from app.services.llm_service import LLMService
 from app.models import Chunk, Chat
 from sqlalchemy.orm import Session
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 import uuid
 from datetime import datetime
 
 
 class QueryServiceError(Exception):
     """Query service error"""
+    pass
+
 
 class QueryService:
     """Orchestrates the complete query pipeline"""
@@ -29,10 +29,9 @@ class QueryService:
         document_ids: List[str],
         db: Session,
         top_k: int = 3,
-        user_id: str = None  # For Day 6
-        ) -> Dict[str, Any]:
-        
-     """
+        user_id: Optional[str] = None  # For Day 6
+    ) -> Dict[str, Any]:
+        """
         Complete query pipeline: question -> embedding -> pinecone search -> LLM -> answer.
         
         Args:
@@ -77,9 +76,9 @@ class QueryService:
                 # Multiple document filter
                 metadata_filter = {"document_id": {"$in": document_ids}}
 
-            results = self.vector_store.query(vector=question_embedding, top_k=top_k, metadata_filter=metadata_filter)
-            print(f"✓ Found {len(results['matches'])} matching chunks")
+            results = self.vector_store.query(vector=question_embedding,top_k=top_k, metadata_filter=metadata_filter)  
             
+            print(f"✓ Found {len(results['matches'])} matching chunks")
             
             print("\n[3/5] Fetching chunk details from database...")
             
@@ -89,10 +88,9 @@ class QueryService:
             
             chunk_map = {str(chunk.id): chunk for chunk in chunks}
             
-            
             context_texts = []
             sources = []
-            for match in results['matches']: # type: ignore
+            for match in results['matches']:
                 chunk_id = match['metadata']['chunk_id']
                 chunk = chunk_map.get(chunk_id)
                 if chunk:
@@ -105,3 +103,40 @@ class QueryService:
                         "score": match['score']
                     })
             print(f"✓ Retrieved chunk details for {len(context_texts)} chunks")
+            
+            print("\n[4/5] Generating answer with LLM...")
+            answer = self.llm_service.generate_answer(question, context_texts)
+            print("Answer generated.")
+            
+            print("\n[5/5] Saving chat to database...")
+            
+            chat = Chat(
+                id=uuid.uuid4(),
+                user_id=user_id,
+                query=question,
+                response=answer,
+                document_ids=document_ids,
+                created_at=datetime.utcnow()
+            )
+            
+            db.add(chat)
+            db.commit()
+            db.refresh(chat)
+            
+            print(f"✓ Chat saved: {chat.id}")
+            
+            print(f"\n{'='*60}")
+            print("✓ QUERY COMPLETE")
+            print(f"{'='*60}\n")
+            
+            return {
+                "answer": answer,
+                "sources": sources,
+                "chat_id": str(chat.id)
+            }
+            
+        except Exception as e:
+            db.rollback()
+            raise QueryServiceError(f"Query failed: {e}") from e
+
+
